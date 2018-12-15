@@ -1,0 +1,156 @@
+﻿<html>
+<head>
+    <!--<link rel='shortcut icon' type='image/x-icon' href='src/favicon.ico' />
+        <link rel="stylesheet" type="text/css" href="precanvas.css">-->
+    <style>
+        html,body{
+            margin:0;
+            padding: 0;
+            border:0;
+        }
+    </style>
+
+</head>
+<body>
+<script src='node_modules/pixi.js/dist/pixi.min.js'></script>
+<script src='js/shapes.js'></script>
+<script src='js/cliente/pixiCam.js'></script>
+
+
+<script src='js/cliente/listeners.js'></script>
+<script src='js/cliente/caracterAnimation.js'></script>
+<script src='js/ente.js'></script>
+<script src='js/scene.js'></script>
+<script src='js/cliente/tileMap.js'></script>
+<script>
+    //var conexion=conect()
+    var colors={
+        b:'#4285F4',
+        r:'#EA4335',
+        g:'#34A853'
+    }
+    var mapa=[];
+    for(k=0;k<200;k++){
+        mapa[k]=0
+        for(j=0;j<200;j++){
+            mapa[k][j]=0;
+        }
+    }
+    var controles={
+        cambiarDireccion:function(){},
+        rotate:function(){},
+        shoot:function(){},
+        action:function(){},
+        tipoCamara:'semicent',
+    }
+
+    var app=new PIXI.Application({transparent:true});
+    var myScene=new Scene()
+    var prota
+
+    window.onload=function(){
+        //preCanvas() //conexion y esas cosas
+        /*console.log(conexion.readyState)*/
+        document.body.appendChild(app.view)
+        pixiCam.initSettings()
+        listeners.add();
+        Caracter.load(creaScene);
+        //pixiCam.centerCamera(prota.position)
+    }
+    function creaScene(){
+        console.log('Imagenes cargadas');
+        Scene.tileMap=new TileMap({x:10,y:10},256)
+        creaJugador();
+        creaJugadores(10)
+        creaInmoviles();
+        //el tiempo pasa por todos
+        myScene.frameFunctions.push(function(delta){
+            
+            for(var k=0;k<myScene.jugadores.length;k++){
+                myScene.jugadores[k].tiempo(delta);
+            }
+            for(var k=0;k<myScene.disparos.length;k++){
+                myScene.disparos[k].tiempo(delta);
+            }
+        })
+        //Choca jugadores!!
+        myScene.frameFunctions.push(function(delta){
+            for(var k=0;k<myScene.jugadores.length;k++){
+                var jugador1=myScene.jugadores[k];
+                for(var j=k+1;j<myScene.jugadores.length;j++){
+                    jugador2=myScene.jugadores[j];
+                    const choque=Shape.rigidBodies.circleVScircle(jugador1.hitArea,jugador2.hitArea);
+                    if(choque){
+                        jugador1.move(choque[0])
+                        jugador2.move(choque[1])
+                    } 
+                }
+            }
+        })
+        //choca disparos!!
+        myScene.frameFunctions.push(function(delta){
+            for(var k=0;k<myScene.disparos.length;k++){
+                var disparo=myScene.disparos[k];
+                for(var j=0;j<myScene.jugadores.length;j++){
+                    if(myScene.jugadores[j]==disparo.padre) continue
+                    var jugador=myScene.jugadores[j];
+                    const choque=Shape.rigidBodies.circleVScircle(disparo.hitArea,jugador.hitArea);
+
+                    if(choque!=false){
+                        disparo.destroy()
+                        jugador.vida=jugador.vida-disparo.atack
+                    } 
+                }
+            }
+        })
+        // reordena los hijos para que se vea primero los más bajos
+        myScene.frameFunctions.push(()=>pixiCam.isometricRendering(app.stage))
+        myScene.addTiempo()
+    }
+    function creaJugador(){
+        //var middle=pixiCam.windowToPixi({x:app.view.width/2,y:app.view.height/2})
+        prota=new Prota()
+        //prota.setPosition(Scene.tileMap.centroAbsCasilla(2,2))
+        prota.add()
+        //UF.pintaPoint(tilemap.x,tilemap.y)
+    }
+    function creaInmoviles(){
+        for(var n=0;n<Scene.tileMap.posiciones.length;n++){
+            for(var m=0;m<Scene.tileMap.posiciones[n].length;m++){
+                var j=new Static({x:0,y:0,animation:Math.round(Math.random()*2),velocidad:(Math.floor(Math.random()*3)+1)/10});
+                j.setPosition(Scene.tileMap.centroAbsCasilla(n,m));
+                j.add();
+            }
+        }
+    }
+    function creaJugadores(n){
+        for(k=0;k<n;k++){
+            const px=Math.random()*n;
+            const py=Math.random()*n;
+            if(Math.random()<0.1){
+                var j=new Static({animation:0,x:0,y:0});
+            }else{
+                var j=new Aleat({x:0,y:0,animation:Math.round(Math.random())+1,velocidad:(Math.floor(Math.random()*3)+1)/10});
+            }
+            j.setPosition({x:px-n/2,y:py-n/2});
+            //j.scale(2)
+            j.add();
+        }
+    }
+    var UF={//user funcionality
+        pintaPoint:function(p,zIndex=0){
+            app.stage.addChild(UF.creaPoint(p,zIndex));
+        },
+        creaPoint:function(p,zIndex=0){
+            let {x,y}=p
+            let graphics = new PIXI.Graphics();
+            graphics.zIndex=zIndex
+            graphics.beginFill(0xFF3300);
+            graphics.lineStyle(4, 0xffd900, 1);
+            graphics.drawCircle(x,y,1);
+            return graphics
+        }
+    }
+</script>
+</body>
+</html>

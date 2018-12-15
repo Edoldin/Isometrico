@@ -1,0 +1,26 @@
+{
+  "name": "isometrico",
+  "version": "1.0.0",
+  "description": "Proyecto isometric",
+  "main": "servidor.js",
+  "scripts": {
+    "start": "node servidor.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Edoldin/Isometrico.git"
+  },
+  "keywords": [
+    "Isometrico\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[C\u001b[i"
+  ],
+  "author": "Edoldin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Edoldin/Isometrico/issues"
+  },
+  "homepage": "https://github.com/Edoldin/Isometrico#readme",
+  "dependencies": {
+    "pixi.js": "^4.8.3"
+  }
+}
