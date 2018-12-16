@@ -43,7 +43,7 @@ class Ente extends Base{
         });
     }
     setPosition(p){
-        this.position.set(p)
+        this.position= new Shape.point(p)
         this.hitArea.moveTo(p)
         this.attachedElements.forEach(e => {
             if(e.update) e.update();
