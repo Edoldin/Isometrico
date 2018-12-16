@@ -13,12 +13,14 @@ var Shape={
         scale(x,y=x){
             return new Shape.point(this.x*x,this.y*y)
         }
-        set(p={x:0,y:0}){
-            this.x=p.x;
-            this.y=p.y;
+        norm2(){
+            return this.x*this.x+this.y*this.y
         }
         norm(){
             return Math.sqrt(this.x*this.x+this.y*this.y)
+        }
+        angle(){
+            return Math.atan2(this.y,this.x)
         }
         copy(){return new Shape.point(this.x,this.y)}
 
@@ -36,12 +38,12 @@ var Shape={
             return new Shape.point(p2.x-p1.x,p2.y-p1.y)
         }
         static distancia(p1,p2){
-            let v=Shape.point.vector(p1,p2);
+            const v=Shape.point.vector(p1,p2);
             return v.norm()
         }
         static vNormalizado(p1,p2){
-            let v=Shape.point.vector(p1,p2)
-            let d=v.norm()
+            const v=Shape.point.vector(p1,p2)
+            const d=v.norm()
             return v.scale(1/d)
         }
     },
@@ -70,7 +72,7 @@ var Shape={
         }
         moveTo(p){
             this.x=p.x-this.x+this.pivot.x;
-            this.y=p.y-this.x+this.pivot.y;
+            this.y=p.y-this.y+this.pivot.y;
         }
         scale(p){
             this.w*=p.x;
@@ -85,28 +87,43 @@ var Shape={
         }
     },
     regularPolygon:class{
-        constructor(cx,cy,n,radio,desfase){
-            this.x=cx;
-            this.y=cy;
-            this.n=n;
-            this.r=radio
-            this.desfase=desfase;
-            this.points=null;
+        constructor(cx,cy,n,radio,desfase=0){
+            this.x=cx;                                      //centro del polígono
+            this.y=cy;                                      //centro del polígono
+            this.n=n;                                       //número de vértices
+            this.maxR=radio                                 //distancia a los vértices
+            this.desfase=desfase;                           //Angulo del primer vértice en radianes
+            this.angle=2*Math.PI/n;                         //Angulo entre vértices
+            this.minR=radio*Math.abs(Math.cos(2*Math.PI))   //distancia a los lados
+            this.points=null;                               //puntos del polígono coordenadas absolutas del polígono
+        }
+        scale(s,bol=false){
+            this.maxR*=s;
+            this.minR*=s;
+            if(bol)this.calcPoints();
+        }
+        moveTo(p){
+            this.x=p.x-this.x;
+            this.y=p.y-this.y;
         }
         calcPoints(){
             this.points=[];
             var desfase=this.desfase;
             for(let k=0;k<this.n;k++){
                 const point=new Shape.point(Math.cos(desfase)*this.r,Math.sin(desfase)*this.r).sum(this)
-                this.points.push(point)
-                desfase+=this.desfase;
+                this.points.push(point);
+                desfase+=this.angle;
             }
         }
         pointIn(p){
-            //sin terminar
             const v=Shape.point.vector(this,p);
             const d=v.norm();
-            if (d>this.r) return false
+            if (d>this.maxR) return false
+            if (d<this.minR) return true
+            const angle=Math.abs((v.angle()-this.desfase)%this.angle-this.angle/2);
+            const dist=Math.sqrt(this.minR*this.minR+Math.pow(Math.sin(angle),2));
+            if (dist<d) return false
+            else return true
         }
     }
     ,

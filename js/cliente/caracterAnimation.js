@@ -103,7 +103,7 @@ class BaseGraphics extends PIXI.Graphics{
 }
 class HitGraphics extends BaseGraphics{
     constructor(padre,stage=app.stage){
-        super(padre,stage=app.stage);
+        super(padre,stage);
         this.zIndex=0;
         this.update()
     }
