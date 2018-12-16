@@ -25,12 +25,12 @@ var Shape={
         angle(){
             return Math.atan2(this.y,this.x)
         }
-        rotate(angle,c={x:0,y:0}){
+        rotate(angle,p={x:0,y:0}){
             const c=Math.cos(angle);
             const s=Math.sin(angle);
-            const x=this.x-c.x;
-            const y=this.y-c.y;
-            return new Shape.point(x*c-y*s+c.x,y*c+x*s+c.y)
+            const x=this.x-p.x;
+            const y=this.y-p.y;
+            return new Shape.point(x*c-y*s+p.x,y*c+x*s+p.y)
         }
         copy(){return new Shape.point(this.x,this.y)}
 
