@@ -37,7 +37,7 @@ class Ente extends Base{
     }
     move(p){// la hitbox no se actualiza bien
         if(p.x==0 && p.y==0) return
-        this.position=this.position.sum(p)
+        this.position=this.position.plus(p)
         this.attachedElements.forEach(e => {
             e.move(p);
         });
@@ -148,7 +148,7 @@ class Prota extends Ente{
         var disparo=new Disparo(this,{position:this.position.copy(),direccion:dir})
         disparo.add()
         //console.log(this.position)
-        const position=this.position.copy().sum(dir.scale(20))
+        const position=this.position.copy().plus(dir.scale(20))
         disparo.setPosition(position)
     }
 }

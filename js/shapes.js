@@ -4,8 +4,11 @@ var Shape={
             this.x=x;
             this.y=y;
         }
-        sum(p){
+        plus(p){
             return new Shape.point(this.x+p.x,this.y+p.y)
+        }
+        rest(p){
+            return new Shape.point(this.x-p.x,this.y-p.y)
         }
         neg(){
             return new Shape.point(-this.x,-this.y)
@@ -22,9 +25,16 @@ var Shape={
         angle(){
             return Math.atan2(this.y,this.x)
         }
+        rotate(angle,c={x:0,y:0}){
+            const c=Math.cos(angle);
+            const s=Math.sin(angle);
+            const x=this.x-c.x;
+            const y=this.y-c.y;
+            return new Shape.point(x*c-y*s+c.x,y*c+x*s+c.y)
+        }
         copy(){return new Shape.point(this.x,this.y)}
 
-        static suma(...puntos){
+        static sum(...puntos){
             var x=puntos[0].x;
             var y=puntos[0].y;
             for (let k=1;k<puntos.length;k++){
@@ -54,16 +64,13 @@ var Shape={
             this.y=y;
             this.w=w;
             this.h=h;
-            this.pivot=this.center()
+            this.pivot=new Shape.point(x,y)
         }
         center(){
-            return new Shape.point(this.x-this.w/2,this.y-this.h/2);
+            return new Shape.point(this.x+this.w/2,this.y+this.h/2);
         }
         copy(){
             return new Shape.rect(this.x,this.y,this.w,this.h)
-        }
-        string(){
-            return JSON.stringify(this)
         }
         move(p){
             this.x=this.x+p.x;
@@ -86,8 +93,49 @@ var Shape={
             return true
         }
     },
+    rectIncl:class {
+        constructor(x,y,w,h,angle){
+            this.type='rect2';
+            this.x=x;            this.y=y;
+            this.w=w;            this.h=h;
+            this.angle=angle;
+            this.cosAngle=Math.cos(angle);
+            this.sinAngle=Math.sin(angle);
+        }
+        center(){
+            const x=this.x+this.cosAngle*this.w/2;
+            const y=this.x+this.sinAngle*this.h/2;
+            return new Shape.point(x,y);
+        }
+        move(p){
+            this.x=this.x+p.x;
+            this.y=this.y+p.y;
+            return true
+        }
+        moveTo(p){
+            this.x=p.x-this.x+this.pivot.x;
+            this.y=p.y-this.y+this.pivot.y;
+        }
+        scale(p){
+            this.w*=p.x;
+            this.h*=p.y;
+            this.x+=(this.x-this.pivot.x)*p.x
+            this.y+=(this.y-this.pivot.y)*p.y
+        }
+        pointIn(p){
+            const x1=p.x-this.x;
+            const y1=p.y-this.y;
+            const x2=x1*this.cosAngle-y1*this.sinAngle+this.x;
+            const y2=y1*this.cosAngle+x1*this.sinAngle+this.y;
+            if(x2<this.x || x2>this.x+this.w) return false;
+            if(y2<this.y || y2>this.y+this.h) return false;
+            return true
+        }
+    }
+    ,
     regularPolygon:class{
         constructor(cx,cy,n,radio,desfase=0){
+            this.type='rpolygon';
             this.x=cx;                                      //centro del polígono
             this.y=cy;                                      //centro del polígono
             this.n=n;                                       //número de vértices
@@ -110,7 +158,7 @@ var Shape={
             this.points=[];
             var desfase=this.desfase;
             for(let k=0;k<this.n;k++){
-                const point=new Shape.point(Math.cos(desfase)*this.r,Math.sin(desfase)*this.r).sum(this)
+                const point=new Shape.point(Math.cos(desfase)*this.r,Math.sin(desfase)*this.r).plus(this)
                 this.points.push(point);
                 desfase+=this.angle;
             }
@@ -163,7 +211,7 @@ var Shape={
             if(difs.c<=4) return true;
             return false
         }
-        pointIn(p){// have to be a convex poligon
+        pointIn(p){// it has to be a convex polygon
             if(this.limitSquare.pointIn(p)){
                 var inside = false;
                 var points=this.points
@@ -213,8 +261,10 @@ var Shape={
             this.r*=(p.x+p.y)/2
         }
         pointIn(p){
-            var dif={x:this.x-p.x,y:this.y-p.y}
-            if (this.r*this.r>this.x*this.x+this.y+this.y) return true
+            const dx=this.x-p.x
+            const dy=this.y-p.y
+            if(dx>this.r || dy>this.r)return false
+            if (this.r*this.r>dx*dx+dy*dy) return true
             return false
         }
     },
