@@ -16,7 +16,7 @@ class TileMap extends PIXI.Container{
         pixiCam.isometricRendering(this);
     }
     actualizaLimite(){
-        //this.limit=
+        this.limit=new Shape.rectIncl() // parámetros?
     }
     cargaPosiciones(n,m){
         this.lx=n;

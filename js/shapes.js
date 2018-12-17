@@ -325,21 +325,42 @@ var Shape={
             if(v.x>r || v.y>r) return false
             const dist=v.norm()
             if(dist>r) return false
-            const interseccion=(r-dist)/r;
-            const direccion=v.scale(1/dist)
+            const interseccion=(r-dist)/r; // interseccion porcentual a la suma de los radios
+            const direccion=v.scale(1/dist)// direccion de la interseccion
             return [interseccion,direccion]
         },
+        cVSr:function (c,r){
+            const r2={x:r.x-c.r,y:r.y-c.r,xw:r.x+r.w+c.r,yh:r.y+r.h+c.r}
+            if(r2.xw<c.x || r2.x>c.x) return false;
+            if(r2.yh<c.y || r2.y>c.y) return false;
+            let interseccion={x:0,y:0};
+            r2.cx=(r2.x+r2.xw)/2;
+            r2.cy=(r2.x+r2.yh)/2;
+            if(c.x<r2.cx) interseccion.x=c.x-r2.x;
+            else interseccion.x=c.x-r2.xw;
+            if(c.y<r2.cy) interseccion.y=c.y-r2.x;
+            else interseccion.y=c.y-r2.yh;
+            return interseccion //interseccion entre c y r, el criterio de signos determina por donde intersecan 
+        }
+    }
+    ,
+    limits:{
+        /*circleINrect:function(c,r){
+            let sol={}
+            if(c.x+c.r>r.x) sol.x=
+            else 
+            if(p.x<this.x || p.x>this.x+this.w){
+                
+            }
+            if(p.y<this.y || p.y>this.y+this.h) return false;
+            return false
+        },
+        circleINrectIncl:function(c,r){
+
+        }*/
     }
     ,
     rigidBodies:{
-        circleINrect:function(c1,r1){
-            let rect2=new Shape.rect(r1.x-c1.r,r1.y-c1.r,r1.w-c1.r,r1.h-c1.r);
-            if (rect2.pointIn(c1))  return false;
-            else{
-                //if()
-            }
-
-        },
         circleVScircle:function(c1,c2,p1,p2){
             const i=Shape.interseccion.cVSc(c1,c2)
             if (i!=false){
