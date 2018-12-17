@@ -20,7 +20,7 @@ class Ente extends Base{
         if(hA.type==1)  o.hitArea=new Shape.rect(x-hA.w/2,y-hA.h/2,hA.w,hA.h)
         if(hA.type==2)  o.hitArea=new Shape.circle(x,y,hA.r)
         this.attachedElements.push(o.hitArea)
-        o.graphics=new Caracter(o)
+        o.graphics=new AnimatedSprite(o)
         this.attachedElements.push(o.graphics)
         o.hitGraphics=new HitGraphics(o)
         this.attachedElements.push(o.hitGraphics)

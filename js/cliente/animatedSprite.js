@@ -1,4 +1,4 @@
-class Caracter{
+class AnimatedSprite{
     constructor(padre){
         let o=this;
         o.sprites={}
@@ -62,15 +62,15 @@ class Caracter{
         delete this
     }
     static load(cb){
-        Caracter.loader=PIXI.loader;
+        AnimatedSprite.loader=PIXI.loader;
         for (let k=0;k<animationtype.length;k++){
-            Caracter.loader.add(animationtype[k].tittle,animationtype[k].src)
+            AnimatedSprite.loader.add(animationtype[k].tittle,animationtype[k].src)
         }
         function separaTexturas(){//poner control para saber si una imagen ha sido cargada
             for(let k=0;k<animationtype.length;k++){
                 let a=animationtype[k]
                 const dim={x:a.width/a.tileNumberW,y:a.height/a.tileNumberH};
-                const baseTexture=Caracter.loader.resources[a.tittle].texture;
+                const baseTexture=AnimatedSprite.loader.resources[a.tittle].texture;
                 for(let h=0;h<a.tileNumberH;h++){
                     for(let w=0;w<a.tileNumberW;w++){
                         const texture=new PIXI.Texture(baseTexture, new PIXI.Rectangle(dim.x*w, dim.y*h, dim.x, dim.y));
@@ -81,54 +81,7 @@ class Caracter{
             }
             cb()
         }
-        Caracter.loader.load(separaTexturas);
-        //Caracter.loader.on('complete', callback())
-    }
-}
-class BaseGraphics extends PIXI.Graphics{
-    constructor(padre,stage=app.stage){
-        super()
-        this.padre=padre;
-        this.stage=stage;
-        stage.addChild(this);
-    }
-    move(p){
-        this.x+=p.x;
-        this.y+=p.y;
-    }
-    remove(){
-        this.stage.removeChild(this)
-        delete this
-    }
-}
-class HitGraphics extends BaseGraphics{
-    constructor(padre,stage=app.stage){
-        super(padre,stage);
-        this.zIndex=0;
-        this.update()
-    }
-    update(){
-        this.clear()
-        this.lineStyle(2, 0xFF0000);
-        if(this.padre.hitArea.type=='rect'){
-            const {x,y,w,h}=this.padre.hitArea;
-            this.drawRect(x,y,w,h);
-        }
-        if(this.padre.hitArea.type=='circle'){
-            const {x,y,r}=this.padre.hitArea;
-            this.drawCircle(x,y,r)
-        }  
-    }
-}
-class PointGraphics extends BaseGraphics{
-    constructor(padre,stage=app.stage){
-        super(padre,stage=app.stage);
-        this.update()
-        //this.zIndex=1;
-    }
-    update(){
-        this.clear()
-        this.lineStyle(2, 0xFF0000);
-        this.drawCircle(this.padre.position.x,this.padre.position.y,1);
+        AnimatedSprite.loader.load(separaTexturas);
+        //AnimatedSprite.loader.on('complete', callback())
     }
 }
