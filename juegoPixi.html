@@ -94,8 +94,7 @@
                 for(var j=0;j<myScene.jugadores.length;j++){
                     if(myScene.jugadores[j]==disparo.padre) continue
                     var jugador=myScene.jugadores[j];
-                    const choque=Shape.rigidBodies.circleVScircle(disparo.hitArea,jugador.hitArea);
-
+                    const choque=Shape.fastCheck.cVSc(disparo.hitArea,jugador.hitArea);
                     if(choque!=false){
                         disparo.destroy()
                         jugador.vida=jugador.vida-disparo.atack

@@ -318,6 +318,16 @@ var Shape={
             return true
         }
     },
+    fastCheck:{
+        cVSc:function(c1,c2){
+            const r=c1.r+c2.r;
+            const v=Shape.point.vector(c1,c2)
+            if(v.x>r || v.y>r) return false
+            const dist=v.norm()
+            if(dist>r) return false
+            return true
+        }
+    },
     interseccion:{
         cVSc:function(c1,c2){
             const r=c1.r+c2.r;
