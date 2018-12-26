@@ -59,7 +59,7 @@ var Shape={
     },
     rect:class {
         constructor(x,y,w,h){
-            this.type='rect';
+            this.type=1;
             this.x=x;
             this.y=y;
             this.w=w;
@@ -95,7 +95,7 @@ var Shape={
     },
     rectIncl:class {
         constructor(x,y,w,h,angle){
-            this.type='rect2';
+            this.type=2;
             this.x=x;            this.y=y;
             this.w=w;            this.h=h;
             this.angle=angle;
@@ -131,11 +131,44 @@ var Shape={
             if(y2<this.y || y2>this.y+this.h) return false;
             return true
         }
-    }
-    ,
+    },
+    circle:class {
+        constructor(x,y,r){
+            this.type=3;
+            this.x=x;
+            this.y=y;
+            this.r=r;
+        }
+        copy(){
+            return new Shape.circle(this.x,this.y,this.r)
+        }
+        string(){
+            return JSON.stringify(this)
+        }
+        move(p){
+            p.r=p.r||0;
+            this.x+=p.x;
+            this.y+=p.y;
+            this.r+=p.r;
+        }
+        moveTo(p){
+            this.x=p.x;
+            this.y=p.y;
+        }
+        scale(p){
+            this.r*=(p.x+p.y)/2
+        }
+        pointIn(p){
+            const dx=this.x-p.x
+            const dy=this.y-p.y
+            if(dx>this.r || dy>this.r)return false
+            if (this.r*this.r>dx*dx+dy*dy) return true
+            return false
+        }
+    },
     regularPolygon:class{
         constructor(cx,cy,n,radio,desfase=0){
-            this.type='rpolygon';
+            this.type=4;
             this.x=cx;                                      //centro del polígono
             this.y=cy;                                      //centro del polígono
             this.n=n;                                       //número de vértices
@@ -177,7 +210,7 @@ var Shape={
     ,
     polygon:class {
         constructor(points){
-            this.type='polygon';
+            this.type=5;
             this.points=points;
             this.limitSquare=this.calcLimitSquare()
         }
@@ -232,40 +265,6 @@ var Shape={
                 this.points[k].y+=p.y;
             }
             this.limitSquare.move(p)
-        }
-    },
-    circle:class {
-        constructor(x,y,r){
-            this.type='circle';
-            this.x=x;
-            this.y=y;
-            this.r=r;
-        }
-        copy(){
-            return new Shape.circle(this.x,this.y,this.r)
-        }
-        string(){
-            return JSON.stringify(this)
-        }
-        move(p){
-            p.r=p.r||0;
-            this.x+=p.x;
-            this.y+=p.y;
-            this.r+=p.r;
-        }
-        moveTo(p){
-            this.x=p.x;
-            this.y=p.y;
-        }
-        scale(p){
-            this.r*=(p.x+p.y)/2
-        }
-        pointIn(p){
-            const dx=this.x-p.x
-            const dy=this.y-p.y
-            if(dx>this.r || dy>this.r)return false
-            if (this.r*this.r>dx*dx+dy*dy) return true
-            return false
         }
     },
     d:{//detecta interseccion y retorna true o false si intersecan o no (funciona)
