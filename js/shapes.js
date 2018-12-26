@@ -255,7 +255,7 @@ var Shape={
         
                     var intersect = ((yi > y) != (yj > y))
                         && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-                    if (intersect) inside = true;
+                    if (intersect) inside = !inside;
                 }
                 return inside;
             }return false;
@@ -354,11 +354,16 @@ var Shape={
             if(c.y<r2.cy) interseccion.y=c.y-r2.x;
             else interseccion.y=c.y-r2.yh;
             return interseccion //interseccion entre c y r, el criterio de signos determina por donde intersecan 
+        },
+        rVSr:function(r1,r2){//sin terminar
+            if(r1.x+r1.w<r2.x || r1.x>r2.x+r2.w) return false;
+            if(r1.y+r1.h<r2.y || r1.y>r2.y+r2.h) return false;
+            return true
         }
     }
     ,
     limits:{
-        circleINrect:function(c,r){
+        circleINrect:function(c,r){//primero círcluo luego rectángulo
             let sol={x:0,y:0}
             if(c.x+c.r<r.x)     sol.x=r.x-c.x-c.r;
             if(c.x-c.r>r.x+r.w) sol.x=r.x+r.w-c.x+c.r;
@@ -367,12 +372,20 @@ var Shape={
             if(sol!={x:0,y:0})  return sol
             else return false
         },
+        circleINcircle:function(c1,c2){//primero el circulo limitado, luego el limitante
+            const v=Shape.point.vector(c1,c2);
+            const rdiff=c2.r-c1.r;
+            const dist=v.norm();
+            if(dist<rdiff) return false
+            return v.scale((-rdiff+dist)/dist)
+        }
     }
     ,
     rigidBodies:{
-        circleVScircle:function(c1,c2,p1,p2){
+        circleVScircle:function(c1,c2,p1=1,p2=1){
             const i=Shape.interseccion.cVSc(c1,c2)
             if (i!=false){
+                const m1=c1.r*p1/p1
                 pC1={x:-i[1].x*i[0]*c1.r,  y:-i[1].y*i[0]*c1.r}
                 pC2={x:i[1].x*i[0]*c2.r,  y:i[1].y*i[0]*c2.r}
                 return [pC1,pC2]

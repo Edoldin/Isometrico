@@ -63,7 +63,7 @@
         console.log('Imagenes cargadas');
         Scene.tileMap=new TileMap({x:10,y:10},256)
         creaJugador();
-        creaJugadores(1000)
+        creaJugadores(300)
         creaInmoviles();
         //el tiempo pasa por todos
         myScene.frameFunctions.push(function(delta){
@@ -107,13 +107,13 @@
                 }
             }
         })
-        //límite de cuadrado
+        //límite de circulo
         myScene.frameFunctions.push(()=>{
-            var rect=new Shape.rect(0,0,800,800)
+            var circle=new Shape.circle(0,0,300)
             for(var k=0;k<myScene.jugadores.length;k++){
                 var j=myScene.jugadores[k];
                 if (j.hitArea.type==3){
-                const choque=Shape.limits.circleINrect(j.hitArea,rect);
+                const choque=Shape.limits.circleINcircle(j.hitArea,circle);
                 if(choque!=false){
                     j.move(choque,k)}
                 }
