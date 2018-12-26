@@ -80,8 +80,8 @@ class Ente extends Base{
         }
     }
     destroy(){
-        this.mySceneArray.splice(this.mySceneArray.indexOf(this), 1);
         this.deleteAll()
+        this.mySceneArray.splice(this.mySceneArray.indexOf(this), 1);
         delete this;
     }
 }
@@ -150,6 +150,16 @@ class Prota extends Ente{
         //console.log(this.position)
         const position=this.position.copy().plus(dir.scale(20))
         disparo.setPosition(position)
+    }
+    disparoAux(){
+        for(let k=0; k< 100;k++){
+            const dir=new Shape.point(Math.cos(Math.PI*k/50),Math.sin(Math.PI*k/50))
+            var disparo=new Disparo(this,{position:this.position.copy(),direccion:dir})
+            disparo.add()
+            //console.log(this.position)
+            const position=this.position.copy().plus(dir.scale(20))
+            disparo.setPosition(position)
+        }
     }
 }
 class Disparo extends Ente{

@@ -39,7 +39,7 @@ class AnimatedSprite{
         this.sprites[animationName].gotoAndPlay(0);
         this.currentSprite=animationName;
     }
-    stop(animationName){
+    stop(){
         this.sprites[this.currentSprite].stop();
     }
     setPosition(p){
@@ -51,8 +51,8 @@ class AnimatedSprite{
         this.container.y+=p.y;
     }
     scale(p,pivot={x:0,y:0}){// no termina de funcionar
-        const x=this.tipo.gContainerPosition.x
-        const y=-this.tipo.gContainerPosition.y
+        //const x=this.tipo.gContainerPosition.x
+        //const y=-this.tipo.gContainerPosition.y
         this.container.pivot=new PIXI.Point(pivot.x,pivot.y);
         this.container.scale.x*=p.x
         this.container.scale.y*=p.y

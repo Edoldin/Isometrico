@@ -54,6 +54,7 @@ var Shape={
         static vNormalizado(p1,p2){
             const v=Shape.point.vector(p1,p2)
             const d=v.norm()
+            if(d==0){ return new Shape.point(1,0)}
             return v.scale(1/d)
         }
     },
@@ -254,7 +255,7 @@ var Shape={
         
                     var intersect = ((yi > y) != (yj > y))
                         && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-                    if (intersect) inside = !inside;
+                    if (intersect) inside = true;
                 }
                 return inside;
             }return false;
@@ -333,10 +334,13 @@ var Shape={
             const v=Shape.point.vector(c1,c2)
             if(v.x>r || v.y>r) return false
             const dist=v.norm()
-            if(dist>r) return false
-            const interseccion=(r-dist)/r; // interseccion porcentual a la suma de los radios
-            const direccion=v.scale(1/dist)// direccion de la interseccion
-            return [interseccion,direccion]
+            if(dist==0) return [1,new Shape.point(1,0)]
+            else{
+                if(dist>r) return false
+                const interseccion=(r-dist)/r; // interseccion porcentual a la suma de los radios
+                const direccion=v.scale(1/dist)// direccion de la interseccion
+                return [interseccion,direccion]
+            }
         },
         cVSr:function (c,r){
             const r2={x:r.x-c.r,y:r.y-c.r,xw:r.x+r.w+c.r,yh:r.y+r.h+c.r}
@@ -354,19 +358,15 @@ var Shape={
     }
     ,
     limits:{
-        /*circleINrect:function(c,r){
-            let sol={}
-            if(c.x+c.r>r.x) sol.x=
-            else 
-            if(p.x<this.x || p.x>this.x+this.w){
-                
-            }
-            if(p.y<this.y || p.y>this.y+this.h) return false;
-            return false
+        circleINrect:function(c,r){
+            let sol={x:0,y:0}
+            if(c.x+c.r<r.x)     sol.x=r.x-c.x-c.r;
+            if(c.x-c.r>r.x+r.w) sol.x=r.x+r.w-c.x+c.r;
+            if(c.y+c.r<r.y)     sol.y=r.y-c.y-c.r;
+            if(c.y-c.r>r.y+r.h) sol.y=r.y+r.h-c.y+c.r;
+            if(sol!={x:0,y:0})  return sol
+            else return false
         },
-        circleINrectIncl:function(c,r){
-
-        }*/
     }
     ,
     rigidBodies:{

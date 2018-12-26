@@ -1,5 +1,6 @@
 ﻿<html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <!--<link rel='shortcut icon' type='image/x-icon' href='src/favicon.ico' />
         <link rel="stylesheet" type="text/css" href="precanvas.css">-->
     <style>
@@ -62,7 +63,7 @@
         console.log('Imagenes cargadas');
         Scene.tileMap=new TileMap({x:10,y:10},256)
         creaJugador();
-        creaJugadores(10)
+        creaJugadores(1000)
         creaInmoviles();
         //el tiempo pasa por todos
         myScene.frameFunctions.push(function(delta){
@@ -82,8 +83,11 @@
                     jugador2=myScene.jugadores[j];
                     const choque=Shape.rigidBodies.circleVScircle(jugador1.hitArea,jugador2.hitArea);
                     if(choque){
-                        jugador1.move(choque[0])
-                        jugador2.move(choque[1])
+                        if(isNaN(choque[0].x) || isNaN(choque[1].x)) console.log('error1' )
+                        else{
+                            jugador1.move(choque[0])
+                            jugador2.move(choque[1])
+                        }
                     } 
                 }
             }
@@ -97,9 +101,21 @@
                     var jugador=myScene.jugadores[j];
                     const choque=Shape.fastCheck.cVSc(disparo.hitArea,jugador.hitArea);
                     if(choque!=false){
-                        disparo.destroy()
+                        disparo.vida=0;
                         jugador.vida=jugador.vida-disparo.atack
                     } 
+                }
+            }
+        })
+        //límite de cuadrado
+        myScene.frameFunctions.push(()=>{
+            var rect=new Shape.rect(0,0,800,800)
+            for(var k=0;k<myScene.jugadores.length;k++){
+                var j=myScene.jugadores[k];
+                if (j.hitArea.type==3){
+                const choque=Shape.limits.circleINrect(j.hitArea,rect);
+                if(choque!=false){
+                    j.move(choque,k)}
                 }
             }
         })
